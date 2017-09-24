@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 const userModel = require('./model/user');
+const intersection = require('array-intersection');
 
 
 const app = express();
@@ -150,6 +151,75 @@ app.put('/api/connect/block',jsonParser, function (req, res) {
 	    res.send({reason: err.toString()});
 	});
 })
+
+//API to retrieve the common friends list between two email addresses.
+	// Expected Body Structure
+	// {
+	//   friends:
+	//     [
+	//       'andy@example.com',
+	//       'john@example.com'
+	//     ]
+	// }
+app.put('/api/connect/mutualfriend',jsonParser, function (req, res) {
+	console.log('Request Body for Mutual Friend API ---> ',req.body);
+
+	var email1 = req.body.friends[0];
+	var email2 = req.body.friends[1];
+	var friendList1 = [];
+	var friendList2 = [];
+	var common = [];
+
+	var result ={
+			  "success": true,
+			  "friends" :[],
+			  "count" : 0   
+			};
+
+	userModel.mutualFriend(email1)
+	.then(function(collection1) {
+
+		if(collection1 != null){
+
+		    	userModel.mutualFriend(email2)
+					.then(function(collection2) {
+
+						if(collection2 != null){
+							collection2.forEach(function(value){
+							  friendList2.push(value.email);
+							});
+							collection1.forEach(function(value){
+							  friendList1.push(value.email);
+							});
+
+							common = intersection(friendList1, friendList2)
+							console.log("mutualFriend",common);
+
+							result.friends = common;
+							result.count = common.length;
+
+						    res.status(200);
+						    res.send(result);
+						}else{
+							res.status(200);
+			                res.send(result);
+						}
+					})
+					.catch(function (err) {
+					    res.status(400);
+					    res.send({reason: err.toString()});
+					});
+		}else{
+			    res.status(200);
+			    res.send(result);
+		}			
+
+	})
+	.catch(function (err) {
+	    res.status(400);
+	    res.send({reason: err.toString()});
+	});
+})	
 
 
 module.exports = app;

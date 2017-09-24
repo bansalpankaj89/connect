@@ -119,6 +119,22 @@ function blockUser(block){
             });
 }
 
+function mutualFriend(email) {
+    console.log("DB User Email ---> "+email);
+    return new Promise(function (resolve, reject) {
+        userModel.findOne({'email': email}).exec(    
+        function(err, result) {
+            if(err){
+                console.log("err ---> "+err);
+                return reject(err);
+            }else{
+                console.log("result ---> "+result.friendList);
+            return resolve(result.friendList);
+            }
+        })
+    });
+}
+
 
 module.exports.getUser = getUser;
 module.exports.getUsers = getUsers;
@@ -126,6 +142,7 @@ module.exports.createUser = createUser;
 module.exports.addFriend = addFriend;
 module.exports.subscribeUser = subscribeUser;
 module.exports.blockUser = blockUser;
+module.exports.mutualFriend = mutualFriend;
 
 
 
