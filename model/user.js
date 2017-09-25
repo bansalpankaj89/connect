@@ -10,6 +10,9 @@ var userSchema = mongoose.Schema({
     subscribeList: [{
         email: { type: String, required: true }
     }],
+    followerList: [{
+        email: { type: String, required: true }
+    }],
     blockList: [{
         email: { type: String, required: true }
     }],
@@ -40,11 +43,25 @@ function getUser(email) {
         userModel.findOne({'email': email}).exec(    
         function(err, result) {
             if(err){
-                console.log("err ---> "+err);
+                console.log('err',err);
                 return reject(err);
             }else{
-                console.log("result ---> "+result);
-            return resolve(result);
+            return resolve(result.friendList);
+            }
+        })
+    });
+}
+
+function getFollowers(email) {
+    console.log("DB User Email ---> "+email);
+    return new Promise(function (resolve, reject) {
+        userModel.findOne({'email': email}).exec(    
+        function(err, result) {
+            if(err){
+                console.log('err',err);
+                return reject(err);
+            }else{
+            return resolve(result.followerList);
             }
         })
     });
@@ -85,12 +102,85 @@ function addFriend(email1,email2){
             });
 }
 
+
+function removeFriend(requestor,target) {
+        return new Promise(function (resolve, reject) {
+        userModel.update({ email: requestor }, { "$pull": { "friendList": { "email": target } }}, { safe: true, multi:true },
+         function(err, result) {
+            if(err)
+                return reject(err);
+            return resolve(result);
+        });
+    });
+}
+
+//{friendList:{$elemMatch:{email:target}}}
+
+function checkUser(requestor,target) {
+    console.log("DB checkUser ---> ",requestor,target);
+    return new Promise(function (resolve, reject) {
+        userModel.findOne({'email':requestor,'friendList.email': target}).exec(    
+        function(err, result) {
+            if(err){
+                return reject(err);
+            }
+            return resolve(result);
+        })
+    });
+}
+
+function checkBlock(requestor,target) {
+    console.log("DB checkBlock ---> ",requestor,target);
+    return new Promise(function (resolve, reject) {
+        userModel.findOne({'email':requestor,'blockList.email': target}).exec(    
+        function(err, result) {
+            if(err){
+                return reject(err);
+            }
+            return resolve(result);
+        })
+    });
+}
+
+function checkSubscribe(requestor,target) {
+    console.log("DB checkSubscribe ---> ",requestor,target);
+    return new Promise(function (resolve, reject) {
+        userModel.findOne({'email':requestor,'subscribeList.email': target}).exec(    
+        function(err, result) {
+            if(err){
+                return reject(err);
+            }
+            return resolve(result);
+        })
+    });
+}
+
+
+
 function subscribeUser(subscribe){
         console.log("DB Subscribe Friends ---> ",subscribe);
         var value = {email: subscribe.target};
 
         return new Promise(function (resolve, reject) {
             userModel.findOneAndUpdate({email: subscribe.requestor}, {$push:{subscribeList:value}},{safe: true, upsert: true,new: true},
+                function(err, data) {
+                    if(err){
+                        return reject(err);
+                    }
+                    return resolve(data);
+                });
+            }).catch(function (err) {
+               return reject(err);
+            });
+}
+
+
+function followUser(subscribe){
+        console.log("DB follow Friends ---> ",subscribe);
+        var value = {email: subscribe.requestor};
+
+        return new Promise(function (resolve, reject) {
+            userModel.findOneAndUpdate({email: subscribe.target}, {$push:{followerList:value}},{safe: true, upsert: true,new: true},
                 function(err, data) {
                     if(err){
                         return reject(err);
@@ -125,15 +215,14 @@ function mutualFriend(email) {
         userModel.findOne({'email': email}).exec(    
         function(err, result) {
             if(err){
-                console.log("err ---> "+err);
                 return reject(err);
-            }else{
-                console.log("result ---> "+result.friendList);
-            return resolve(result.friendList);
             }
+            return resolve(result.friendList);
         })
     });
 }
+
+
 
 
 module.exports.getUser = getUser;
@@ -141,8 +230,16 @@ module.exports.getUsers = getUsers;
 module.exports.createUser = createUser;
 module.exports.addFriend = addFriend;
 module.exports.subscribeUser = subscribeUser;
+module.exports.followUser = followUser;
 module.exports.blockUser = blockUser;
 module.exports.mutualFriend = mutualFriend;
+module.exports.checkUser = checkUser;
+module.exports.checkBlock = checkBlock;
+module.exports.checkSubscribe = checkSubscribe;
+module.exports.removeFriend = removeFriend;
+module.exports.getFollowers = getFollowers;
+
+
 
 
 
