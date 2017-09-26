@@ -1,20 +1,20 @@
 # connect
 API to create new user
 
-      POST http://localhost:3000/api/connect/user
+      POST http://connect-app.azurewebsites.net/api/connect/user
 
               The API should receive the following JSON request:
                 {"name":"lisa","email":"lisa@connect.com"}
 
 API to Fetch all User
 
-      GET http://localhost:3000/api/connect/users
+      GET http://connect-app.azurewebsites.net/api/connect/users
 
 —————————————————————————————————————————————
 
 1.API to create a friend connection between two email addresses.
 
-	     http://localhost:3000/api/connect/addfriend
+       http://connect-app.azurewebsites.net/api/connect/addfriend
 
                 The API should receive the following JSON request:
                 {
@@ -33,7 +33,7 @@ API to Fetch all User
 
 2.API to retrieve the friends list for an email address.
 
-	    http://localhost:3000/api/connect/user
+       http://connect-app.azurewebsites.net/api/connect/user
     
                   The API should receive the following JSON request:
                   {
@@ -52,7 +52,7 @@ API to Fetch all User
 
 3.API to retrieve the common friends list between two email addresses.
              
-      http://localhost:3000/api/connect/mutualfriend
+      http://connect-app.azurewebsites.net/api/connect/mutualfriend
            
                   The API should receive the following JSON request:
                   {
@@ -75,7 +75,7 @@ API to Fetch all User
 
 4.API to subscribe to updates from an email address
 
-	    http://localhost:3000/api/connect/subscribe
+       http://connect-app.azurewebsites.net/api/connect/subscribe
        
                   The API should receive the following JSON request:
                   {
@@ -90,7 +90,7 @@ API to Fetch all User
 
 5.API to block updates from an email address.
 
-    	http://localhost:3000/api/connect/block
+       http://connect-app.azurewebsites.net/api/connect/block
 
                   The API should receive the following JSON request:
                   {
@@ -105,7 +105,7 @@ API to Fetch all User
 
 6. API to retrieve all email addresses that can receive updates from an email address.
 
-       http://localhost:3000/api/connect/recieveupdates
+       http://connect-app.azurewebsites.net/api/connect/recieveupdates
 
                   The API should receive the following JSON request:
                   {
