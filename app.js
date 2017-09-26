@@ -30,8 +30,8 @@ app.post('/api/connect/user',jsonParser, function (req, res) {
 	console.log('Request Body for Create New User API ---> ',req.body);
 
 	var user ={
-		name : req.body.name,
-		email : req.body.email
+		name : req.body.name.toLowerCase(),
+		email : req.body.email.toLowerCase()
 	} 
 
 	userModel.createUser(user)
